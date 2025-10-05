@@ -19,9 +19,11 @@ impl Keeb {
                         && info.interface_number() == 1
                 });
                 if dev.is_some() {
-                    Ok(Keeb {
+                    let keeb = Keeb {
                         device: api.open_path(dev.unwrap().path())?,
-                    })
+                    };
+                    keeb.set_custom_mode()?;
+                    Ok(keeb)
                 } else {
                     Err(HidError::HidApiError {
                         message: "could not connect to device".to_string(),
@@ -39,6 +41,10 @@ impl Keeb {
         self.device.write(&pad(buf))?;
         self.device.write(&pad(&[0x04, 0x02, 0x00, 0x02]))?;
         Ok(())
+    }
+
+    fn set_custom_mode(&self) -> Result<(), HidError> {
+        self.send(&[0x04, 0x1b, 0x00, 0x06, 0x01, 0x00, 0x00, 0x00, 0x14])
     }
 
     pub fn set_key_colour(&self, key: KeyCode, colour: Colour) -> Result<(), HidError> {

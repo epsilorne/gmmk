@@ -1,3 +1,4 @@
+use std::error::Error;
 use std::thread::sleep;
 use std::time::Duration;
 
@@ -7,8 +8,8 @@ use crate::model::{Colour, KeyCode};
 mod kb;
 mod model;
 
-fn main() {
-    let keyboard = Keeb::new().expect("");
+fn main() -> Result<(), Box<dyn Error>> {
+    let keyboard = Keeb::new()?;
 
     loop {
         keyboard
